@@ -13,7 +13,7 @@ services:
     volumes:
       - ./app:/app
     ports:
-      - "80:80"
+      - "80"
 
     command:
             - /bin/sh
