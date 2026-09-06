@@ -1,119 +1,232 @@
-import React, { useState } from "react";
+import React from "react";
 import {
-  AppBar,
-  Toolbar,
   Typography,
-  IconButton,
-  Menu,
-  MenuItem,
-  Button,
-  Box,
   Container,
   Grid,
-  SvgIcon
+  LinearProgress,
+  Button,
 } from "@mui/material";
+import DirectionsIcon from '@mui/icons-material/Directions';
 
-function MenuIcon(props) {
-  return (
-    <SvgIcon {...props}>
-      <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-    </SvgIcon>
-  );
-}
+import PageItem from "./PageItem";
+import Programm from "./Programm";
+import Questionaire from "./Questionaire";
+import Stoeger from "./Stoeger";
+import Hotel from "./Hotel";
 
-const pages = ["Home", "About", "Schdule", "RSVP", "Gallery"];
 
-export default function App() {
-  const [anchorElNav, setAnchorElNav] = useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+    this.state = {
+      url_shortcode: url_shortcode,
+      guests: null,
+      hotels: [],
+    };
+  }
 
-  return (
-    <Container maxWidth="lg" sx={{ mt: 2 }}>
-      <AppBar position="static">
-        <Toolbar disableGutters sx={{ px: 2 }}>
-          {/* Desktop Logo / Title */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ mr: 2, display: { xs: "none", md: "flex" }, fontWeight: 700 }}
-          >
-            Template
-          </Typography>
+  componentDidMount() {
+    this.getInfo();
 
-          {/* Mobile Hamburger Menu Icon & Dropdown */}
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="navigation menu"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{ display: { xs: "block", md: "none" } }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+  }
 
-          {/* Mobile Logo / Title */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" }, fontWeight: 700 }}
-          >
-            Template
-          </Typography>
+  getInfo() {
+    fetch('/api/' + window.url_shortcode)
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ guests: data.guests || [] });
+        console.log(data)
+      });
+    fetch("/api/hotels")
+      .then(response => response.json())
+      .then(data => {
+        const hotels = (data.hotels || []).map(hotel => ({
+          ...hotel,
+          position: hotel.lat != null && hotel.lng != null
+            ? [Number(hotel.lat), Number(hotel.lng)]
+            : undefined,
+        }));
+        this.setState({ hotels });
+      })
 
-          {/* Desktop Navigation Links */}
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-        </Toolbar>
-      </AppBar>
+  }
 
-      <Grid container spacing={2} sx={{ mt: 2 }}>
-        <Grid item xs={12} id="content">
-          <Typography variant="body1">Welcome to the App Page!</Typography>
-        </Grid>
-      </Grid>
-    </Container>
-  );
-}
+  render() {
+    if (this.state.guests == null || this.state.guests.length === 0) {
+      return <LinearProgress aria-label="Loading…" />;
+    }
+    else {
+      const selectedHotel = this.state.hotels.find(
+        hotel => hotel.id === Number(this.state.guests[0].hotel)
+      );
+      
+      const attendingXX = this.state.guests.some(guest => Boolean(guest.attending_xx));
+      const attendingHike = this.state.guests.some(guest => Boolean(guest.attending_20_1));
+      const attendingDinner = this.state.guests.some(guest => Boolean(guest.attending_20_2));
+      const attendingBreakfast = this.state.guests.some(guest => Boolean(guest.attending_22));
+
+      return (
+        <Container component="main" maxWidth="lg" sx={{ mt: 2 }}>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
+            <Grid item xs={12} component="header" id="header">
+              <Typography variant="h1">Pamina & Fabian</Typography>
+              <Typography variant="h2">21.08.2027</Typography>
+            </Grid>
+            <Grid item xs={12} component="section" id="anrede" aria-labelledby="welcome-heading">
+              <Typography id="welcome-heading" variant="h3">
+                {this.state.guests.map((guest, index) => (index === 0 ? guest.anrede.charAt(0).toUpperCase() + guest.anrede.slice(1) : guest.anrede) + ", ")}
+              </Typography>
+              <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
+                {this.state.guests[0].einleitung}
+              </Typography>
+              <Typography variant="body2">Auf dieser Seite haben wir ein paar wichtige Informationen für euch zusammengestellt, die wir auch im Laufe der nächsten Monate immer wieder aktualisieren werden.</Typography>
+            </Grid>
+            <Grid item xs={12} component="section" id="infos" aria-label="Hochzeitsinformationen">
+              <PageItem
+                id="venue"
+                title="Die Stögeralm">
+                <Stoeger />
+              </PageItem>
+              <PageItem
+                id="schedule"
+                title="Programm">
+                <Programm />
+              </PageItem>
+              <PageItem
+                id="travel"
+                title="Anreise">
+                <Typography variant="h5">Öffentlich</Typography>
+                <Typography variant="body1">
+                  Der Ort Schliersee ist mit der Bahn sehr gut zu erreichen. Vom Münchner Hauptbahnhof fährt stündlich um 26 Minuten nach ein Zug. Hier müsst ihr nur auf den richtigen Wagon achten, weil der Zug unterwegs getrennt wird und nur ein Wagon zum Schliersee fährt. Die Fahrt dauert 57 Minuten. <br /> Am Samstag Abend fährt der letzte Zug zurück um 22:59.
+                </Typography>
+                <Typography variant="h5">PKW</Typography>
+                <Typography variant="body1">
+                  Von München aus benötigt ihr 50 Minuten bis zum Ort Schliersee. Parken ist im Ort Schliersee an den meisten Parkplätzen nur bis zu 24 Stunden gegen Gebühr möglich. Daher am besten beim Hotel erkundigen. <br /> Am Samstag gibt es an der Stögeralm genügend Parkplätze für alle. <br />Für Samstag Abend organisieren wir einen Shuttle, der euch sicher von der Stögeralm in die Hotels in Schliersee bringt. Autos dürfen gerne über Nacht an der Stögeralm stehen gelassen werden.
+                </Typography>
+              </PageItem>
+              <PageItem
+                id="accommodation"
+                title="Unterkunft">
+                <Hotel guests={this.state.guests} hotels={this.state.hotels} />
+              </PageItem>
+              <PageItem
+                id="credits"
+                title="Credits">
+                <Typography variant="body1" style={{ textAlign: 'center' }}>
+                  Trauredner - Torben<br />
+                  Geige - Sarah<br />
+                  Fotos - Laura<br />
+                </Typography>
+              </PageItem>
+              <PageItem
+                id="questions"
+                title="Ein paar Fragen ...">
+                <Questionaire guests={this.state.guests} />
+              </PageItem>
+            </Grid>
+            <Grid item xs={12}>
+              <Grid container spacing={2}>
+                <Grid item xs={6} md={3}>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    startIcon={<DirectionsIcon />}
+                    href="https://maps.app.goo.gl/TAoNJhRfskXNyquN7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Stögeralm
+                  </Button>
+                  
+                </Grid>
+                {selectedHotel?.googleMaps && (
+                  <Grid item xs={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      startIcon={<DirectionsIcon />}
+                      href={selectedHotel.googleMaps}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {selectedHotel.name}
+                    </Button>
+                  </Grid>
+                )}
+                {attendingXX && (
+                  <Grid item xs={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      startIcon={<DirectionsIcon />}
+                      href="https://maps.app.goo.gl/TAoNJhRfskXNyquN7"
+                      target="_blank"
+                      disabled
+                      rel="noopener noreferrer"
+                    >
+                      Standesamt München
+                    </Button>
+                  </Grid>
+                )}
+                {attendingHike && (
+                  <Grid item xs={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      startIcon={<DirectionsIcon />}
+                      href="https://maps.app.goo.gl/TAoNJhRfskXNyquN7"
+                      target="_blank"
+                      disabled
+                      rel="noopener noreferrer"
+                    >
+                      Ausgangspunkt Wanderung
+                    </Button>
+                  </Grid>
+                )}
+                {attendingDinner && (
+                  <Grid item xs={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      startIcon={<DirectionsIcon />}
+                      href="https://maps.app.goo.gl/TAoNJhRfskXNyquN7"
+                      target="_blank"
+                      disabled
+                      rel="noopener noreferrer"
+                    >
+                      Abendessen am Samstag
+                    </Button>
+                  </Grid>
+                )}
+
+                {attendingBreakfast && (
+                  <Grid item xs={6} md={3}>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      fullWidth
+                      startIcon={<DirectionsIcon />}
+                      href="https://maps.app.goo.gl/TAoNJhRfskXNyquN7"
+                      target="_blank"
+                      disabled
+                      rel="noopener noreferrer"
+                    >
+                      Frühstück am Sonntag
+                    </Button>
+                  </Grid>
+                )}
+              </Grid>
+            </Grid>
+          </Grid>
+        </Container>
+      );
+    }
+  }
+} 

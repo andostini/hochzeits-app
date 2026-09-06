@@ -3,7 +3,7 @@ version: '3.14'
 services:
   flask:
     build: ./app
-    container_name: template-flask
+    container_name: hochzeit-flask
     environment:
       - FLASK_APP=flaskr:create_app
       - FLASK_ENV=development
@@ -21,7 +21,7 @@ services:
             - flask run 
   nodeJS:
           image: node:latest
-          container_name: template-nodejs
+          container_name: hochzeit-nodejs
           restart: unless-stopped
           volumes:
               - ./app:/app
