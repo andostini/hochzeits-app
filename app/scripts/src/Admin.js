@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Container, Typography, Box, Checkbox, Link, MenuItem, Select, TextField, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Button, Container, Typography, Box, Checkbox, IconButton, Link, MenuItem, Select, TextField, Grid, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { DataGrid } from '@mui/x-data-grid';
 
 const groupOrder = [
@@ -81,6 +82,8 @@ export default class App extends React.Component {
             hotels: [],
             einleitungDialogGuest: null,
             einleitungDialogSaving: false,
+            deleteDialogGuest: null,
+            deleteDialogDeleting: false,
         };
     }
 
@@ -271,17 +274,76 @@ export default class App extends React.Component {
 
     }
 
+    addGuest = () => {
+        fetch('/api/addGuest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to add guest');
+            }
+            return response.json();
+        }).then(newGuest => {
+            this.setState(previousState => ({
+                guests: [...previousState.guests, newGuest.guest]
+            }));
+        }).catch(error => {
+            console.error('Error adding guest:', error);
+        });
+    };
+
+    handleDeleteGuest = (guest) => {
+        this.setState({ deleteDialogGuest: guest });
+    };
+
+    handleDeleteDialogClose = () => {
+        if (!this.state.deleteDialogDeleting) {
+            this.setState({ deleteDialogGuest: null });
+        }
+    };
+
+    handleDeleteDialogConfirm = () => {
+        const { deleteDialogGuest } = this.state;
+        if (!deleteDialogGuest) {
+            return;
+        }
+
+        this.setState({ deleteDialogDeleting: true });
+        fetch('/api/deleteGuest', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: deleteDialogGuest.id })
+        }).then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete guest');
+            }
+            this.setState(previousState => ({
+                guests: previousState.guests.filter(guest => guest.id !== deleteDialogGuest.id),
+                deleteDialogGuest: null,
+                deleteDialogDeleting: false,
+            }));
+        }).catch(error => {
+            console.error('Error deleting guest:', error);
+            this.setState({ deleteDialogDeleting: false });
+        });
+    };
+
     render() {
         console.log(this.state.guests); // Debugging:
         return (
-            <Container component="main" maxWidth="lg" sx={{ mt: 4 }}>
+            <Container component="main" maxWidth={false} sx={{ mt: 4 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Typography variant="h1">Verwaltung</Typography>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{ minWidth: 0 }}>
 
-                        <Box >
+                        <Box sx={{ width: '100%'}}>
                             <DataGrid
                                 rows={this.state.guests}
                                 onCellDoubleClick={this.handleCellDoubleClick}
@@ -354,11 +416,31 @@ export default class App extends React.Component {
                                     { field: 'plus_one', headerName: 'Plus One', renderCell: (params) => (<Checkbox checked={Boolean(params.value)} onChange={(e) => this.handleCheckboxChange(params, e)} />) },
                                     { field: 'allergies', headerName: 'Allergien' },
                                     { field: 'umfrage', headerName: 'Umfrage' },
+                                    {
+                                        field: 'delete',
+                                        headerName: '',
+                                        width: 60,
+                                        sortable: false,
+                                        filterable: false,
+                                        disableColumnMenu: true,
+                                        renderCell: (params) => (
+                                            <IconButton onClick={() => this.handleDeleteGuest(params.row)} size="small">
+                                                <DeleteIcon fontSize="small" />
+                                            </IconButton>
+                                        ),
+                                    },
                                 ]}
                             />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={this.addGuest}
+                        >
+                            + Gast 
+                        </Button>
                         <Button
                             variant="contained"
                             color="primary"
@@ -377,6 +459,21 @@ export default class App extends React.Component {
                     onSave={this.handleEinleitungDialogSave}
                     saving={this.state.einleitungDialogSaving}
                 />
+
+                <Dialog open={Boolean(this.state.deleteDialogGuest)} onClose={this.handleDeleteDialogClose}>
+                    <DialogTitle>Gast löschen</DialogTitle>
+                    <DialogContent>
+                        Möchtest du {this.state.deleteDialogGuest?.name || 'diesen Gast'} wirklich löschen?
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.handleDeleteDialogClose} disabled={this.state.deleteDialogDeleting}>
+                            Abbrechen
+                        </Button>
+                        <Button onClick={this.handleDeleteDialogConfirm} variant="contained" color="error" disabled={this.state.deleteDialogDeleting}>
+                            Löschen
+                        </Button>
+                    </DialogActions>
+                </Dialog>
 
             </Container>
         );

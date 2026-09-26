@@ -4,6 +4,7 @@ import App from './App';
 import Admin from './Admin';
 import Home from './Home';
 import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 import theme from './styles';
 
 const content = pageNotFound
@@ -20,6 +21,7 @@ const content = pageNotFound
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
+      <CssBaseline />
       {content}
     </ThemeProvider>
   </React.StrictMode>,

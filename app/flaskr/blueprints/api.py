@@ -161,3 +161,24 @@ def get_invitations():
         as_attachment=True,
         download_name='hochzeitseinladungen.pdf',
     )
+
+
+@bp.route('/addGuest', methods=['POST'])
+def add_guest():
+    db = get_db()
+    db.execute('INSERT INTO guests (name, anrede, einleitung, email, url_shortcode) VALUES ("NEUER GAST", "Lieber ...", "", "", "neu")')
+    db.commit()
+    new_guest = db.execute('SELECT * FROM guests ORDER BY id DESC LIMIT 1').fetchone()
+    return {'guest': dict(new_guest)}
+
+
+@bp.route('/deleteGuest', methods=['POST'])
+def delete_guest():
+    db = get_db()
+    data = request.get_json()
+    guest_id = data.get('id')
+    if guest_id is None:
+        abort(400)
+    db.execute('DELETE FROM guests WHERE id = ?', (guest_id,))
+    db.commit()
+    return {'status': 'success'}

@@ -92,7 +92,7 @@ export default class Questionaire extends React.Component {
         return (
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <Typography variant="body1">Bitte gebt uns Bescheid, an welchen Programmpunkten ihr teilnehmen werdet:</Typography>
+                    <Typography variant="body1">Bitte gebt uns Bescheid, an welchen Programmpunkten ihr teilnehmen werdet. Die Auswahl könnt ihr auch jederzeit wieder ändern.</Typography>
                 </Grid>
                 <Grid item xs={12}>
                 <FormControl fullWidth={true}>

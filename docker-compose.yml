@@ -4,6 +4,7 @@ services:
   flask:
     build: ./app
     container_name: hochzeit-flask
+    restart: unless-stopped
     environment:
       - FLASK_APP=flaskr:create_app
       - FLASK_ENV=development
@@ -13,7 +14,7 @@ services:
     volumes:
       - ./app:/app
     ports:
-      - "80"
+      - "0.0.0.0:80:80"
 
     command:
             - /bin/sh

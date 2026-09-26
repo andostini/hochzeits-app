@@ -5,6 +5,7 @@ import {
   Grid,
   LinearProgress,
   Button,
+  Box,
 } from "@mui/material";
 import DirectionsIcon from '@mui/icons-material/Directions';
 
@@ -68,8 +69,34 @@ export default class App extends React.Component {
       const attendingBreakfast = this.state.guests.some(guest => Boolean(guest.attending_22));
 
       return (
-        <Container component="main" maxWidth="lg" sx={{ mt: 2 }}>
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+        <>
+        <Box
+          sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: "500px",
+            maxHeight: "65vh",
+            backgroundImage: "url(/static/img/title.jpg)",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center",
+            zIndex: -1,
+          }}
+        />
+        <Container
+          component="main"
+          maxWidth={false}
+          sx={{
+            mt: "500px",
+            bgcolor: "background.default",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <Grid container spacing={2} maxWidth={"lg"} sx={{ mt: 2 }}>
             <Grid item xs={12} component="header" id="header">
               <Typography variant="h1">Pamina & Fabian</Typography>
               <Typography variant="h2">21.08.2027</Typography>
@@ -115,9 +142,10 @@ export default class App extends React.Component {
                 id="credits"
                 title="Credits">
                 <Typography variant="body1" style={{ textAlign: 'center' }}>
-                  Trauredner - Torben<br />
-                  Geige - Sarah<br />
-                  Fotos - Laura<br />
+                  Trauzeugen - Marietheres Hnida & Daniel Bejko<br />
+                  Trauredner - Torben Frey<br />
+                  Musikalische Leitung - Sarah Geigenspieler<br />
+                  Fotos - Laura Döring<br />
                 </Typography>
               </PageItem>
               <PageItem
@@ -226,6 +254,7 @@ export default class App extends React.Component {
             </Grid>
           </Grid>
         </Container>
+        </>
       );
     }
   }

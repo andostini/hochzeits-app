@@ -18,15 +18,18 @@ const theme = createTheme({
   typography: {
     fontFamily: 'Trebuchet MS, Verdana, sans-serif',
     h1: {
-      fontFamily: 'Georgia, Times New Roman, serif',
-      fontSize: '3.25rem',
+      fontFamily: '"EB Garamond", Georgia, Times New Roman, serif',
+      fontSize: '4.25rem',
       fontWeight: 400,
+      letterSpacing: '0.12em',
+      textTransform: 'uppercase',
       lineHeight: 1.1,
       color: pine,
     },
     h2: {
-      fontSize: '0.9rem',
-      fontWeight: 700,
+      fontFamily: '"Cormorant Garamond", Georgia, Times New Roman, serif',
+      fontSize: '2.6rem',
+      fontWeight: 600,
       letterSpacing: '0.12em',
       textTransform: 'uppercase',
       color: gold,
