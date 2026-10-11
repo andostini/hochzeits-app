@@ -209,6 +209,17 @@ INSERT INTO hotels (name, image, address, phone, web, googleMaps, lat, lng) VALU
 INSERT INTO hotels
 (name, image, address, phone, web, googleMaps, lat, lng)
 VALUES
+('Das Maximilian',
+ 'https://d3enm7zx52tp93.cloudfront.net/verticals/hero/61ed2737f5c6427cbd643b39042263f6.jpg',
+ 'Maximilianstraße 1, 83727 Schliersee',
+ '08026 9264100',
+ 'https://das-maximilian.com/',
+ 'https://maps.app.goo.gl/k6RBnD1BWCSEughN9',
+47.729645869907785, 11.869696817126707);
+
+ INSERT INTO hotels
+(name, image, address, phone, web, googleMaps, lat, lng)
+VALUES
 ('Schliersberg Alm',
  'https://magazin.schliersee.de/wp-content/uploads/2021/12/DSC08433.jpg',
  'Schliersberg 1, 83727 Schliersee',

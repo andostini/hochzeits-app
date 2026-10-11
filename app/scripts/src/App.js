@@ -76,12 +76,12 @@ export default class App extends React.Component {
             top: 0,
             left: 0,
             right: 0,
-            height: "500px",
-            maxHeight: "65vh",
-            backgroundImage: "url(/static/img/title.jpg)",
+            height: "600px",
+            maxHeight: "60vh",
+            backgroundImage: "url(/static/img/DOG091801.jpg)",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
-            backgroundPosition: "center",
+            backgroundPosition: "center 27%",
             zIndex: -1,
           }}
         />
@@ -89,7 +89,7 @@ export default class App extends React.Component {
           component="main"
           maxWidth={false}
           sx={{
-            mt: "500px",
+            marginTop: "min(600px, 60vh)",
             bgcolor: "background.default",
             display: "flex",
             flexDirection: "column",
@@ -140,7 +140,9 @@ export default class App extends React.Component {
               </PageItem>
               <PageItem
                 id="credits"
-                title="Credits">
+                title="Credits"
+                hidden={true}
+                >
                 <Typography variant="body1" style={{ textAlign: 'center' }}>
                   Trauzeugen - Marietheres Hnida & Daniel Bejko<br />
                   Trauredner - Torben Frey<br />
@@ -153,6 +155,20 @@ export default class App extends React.Component {
                 title="Ein paar Fragen ...">
                 <Questionaire guests={this.state.guests} />
               </PageItem>
+            </Grid>
+            <Grid item xs={12}>
+              <Box
+                style={{
+                  width: "100%",
+                  height: "45vh",
+                  backgroundImage: "url(/static/img/DOG09198.jpg)",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center center"
+                }}
+              >
+
+              </Box>
+
             </Grid>
             <Grid item xs={12}>
               <Grid container spacing={2}>

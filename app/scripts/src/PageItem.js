@@ -11,6 +11,10 @@ export default class PageItem extends React.Component {
     render() {
         const headingId = `${this.props.id}-heading`;
 
+        if (this.props.hidden) {
+            return null;
+        }
+
         return (
             <Accordion component="section" id={this.props.id}>
                 <AccordionSummary
