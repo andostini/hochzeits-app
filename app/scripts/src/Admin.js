@@ -367,6 +367,15 @@ export default class App extends React.Component {
                                             />
                                         ),
                                     },
+                                    {
+                                        field: 'row_number',
+                                        headerName: '#',
+                                        width: 60,
+                                        sortable: false,
+                                        filterable: false,
+                                        disableColumnMenu: true,
+                                        renderCell: (params) => params.api.getRowIndexRelativeToVisibleRows(params.id) + 1,
+                                    },
                                     { field: 'id', headerName: 'ID', width: 10 },
                                     { field: 'url_shortcode', headerName: 'URL Shortcode', editable: true, renderCell: (params) => (<Link href={`/${params.value}`} target="_blank" rel="noopener">{params.value}</Link>) },
                                     { field: 'Gruppe', headerName: 'Gruppe', editable: true },

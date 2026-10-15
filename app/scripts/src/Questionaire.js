@@ -190,7 +190,7 @@ export default class Questionaire extends React.Component {
                                     ))}
                                 </TableRow>
                                 <TableRow>
-                                    <TableCell>Welchen Namen sollen wir annehmen?</TableCell>
+                                    <TableCell>Welchen Namen findet ihr besser?</TableCell>
                                     {guests.map(guest => (
                                     <TableCell key={guest.id}>
                                         <RadioGroup name={`umfrage_${guest.id}`} value={guest.umfrage || ''} onChange={(event) => this.handleUmfrageChange(guest.id, event)}>
