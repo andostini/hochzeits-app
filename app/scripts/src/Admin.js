@@ -260,11 +260,11 @@ export default class App extends React.Component {
                 }
                 return response.blob();
             })
-            .then(pdf => {
-                const downloadUrl = URL.createObjectURL(pdf);
+            .then(zip => {
+                const downloadUrl = URL.createObjectURL(zip);
                 const link = document.createElement('a');
                 link.href = downloadUrl;
-                link.download = 'hochzeitseinladungen.pdf';
+                link.download = 'hochzeitseinladungen.zip';
                 link.click();
                 URL.revokeObjectURL(downloadUrl);
             })

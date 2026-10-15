@@ -1,55 +1,65 @@
 import { createTheme } from '@mui/material/styles';
 
-const pine = '#29473A';
-const rose = '#B86D62';
-const gold = '#B49455';
-const ivory = '#FCF8F1';
-const ink = '#25302A';
+const olive = '#AAA88A';
+const paleOlive = '#F5F4EE';
+const ink = '#30302A';
+const background = '#FFFBF5';
+const paper = '#FFFFFF';
+const border = '#E6E4DA';
+const softBorder = '#ECEAE2';
 
 const theme = createTheme({
   palette: {
     mode: 'light',
-    primary: { main: pine, contrastText: ivory },
-    secondary: { main: rose, contrastText: ivory },
-    background: { default: ivory, paper: '#FFFDF8' },
-    text: { primary: ink, secondary: '#5D665E' },
-    divider: '#D9CCB7',
+    primary: { main: ink, contrastText: paper },
+    secondary: { main: olive, contrastText: ink },
+    background: { default: background, paper },
+    text: { primary: ink, secondary: '#656359' },
+    divider: border,
   },
   typography: {
-    fontFamily: 'Trebuchet MS, Verdana, sans-serif',
+    fontFamily: '"EB Garamond", Georgia, "Times New Roman", serif',
     h1: {
-      fontFamily: '"EB Garamond", Georgia, Times New Roman, serif',
-      fontSize: '4.25rem',
+      fontFamily: '"Playfair Display", "Bodoni 72", Didot, Georgia, serif',
+      fontSize: '4rem',
       fontWeight: 400,
-      letterSpacing: '0.12em',
-      textTransform: 'uppercase',
+      letterSpacing: '0.01em',
       lineHeight: 1.1,
-      color: pine,
+      color: ink,
     },
     h2: {
-      fontFamily: '"Cormorant Garamond", Georgia, Times New Roman, serif',
+      fontFamily: '"EB Garamond", Georgia, "Times New Roman", serif',
       fontSize: '2.6rem',
-      fontWeight: 600,
-      letterSpacing: '0.12em',
-      textTransform: 'uppercase',
-      color: gold,
+      fontWeight: 400,
+      color: ink,
     },
     h3: {
-      fontFamily: 'Georgia, Times New Roman, serif',
+      fontFamily: '"EB Garamond", Georgia, "Times New Roman", serif',
       fontSize: '1.7rem',
-      fontWeight: 400,
-      color: pine,
+      fontWeight: 600,
+      color: ink,
     },
     h4: {
-      fontFamily: 'Georgia, Times New Roman, serif',
+      fontFamily: '"EB Garamond", Georgia, "Times New Roman", serif',
       fontSize: '1.35rem',
-      fontWeight: 400,
+      fontWeight: 600,
+      color: ink,
     },
-    h5: { fontWeight: 700, color: pine, marginTop: '1rem' },
+    h5: {
+      fontFamily: '"EB Garamond", Georgia, "Times New Roman", serif',
+      fontWeight: 600,
+      color: ink,
+      marginTop: '1rem',
+    },
+    h6: {
+      fontFamily: '"EB Garamond", Georgia, "Times New Roman", serif',
+      fontWeight: 600,
+      color: ink,
+    },
     body1: { fontSize: '1rem', lineHeight: 1.7 },
     body2: { lineHeight: 1.5 },
   },
-  shape: { borderRadius: 6 },
+  shape: { borderRadius: 3 },
   components: {
     MuiContainer: {
       styleOverrides: {
@@ -63,7 +73,7 @@ const theme = createTheme({
             textAlign: 'center',
             paddingTop: '2.5rem',
             paddingBottom: '1.75rem',
-            borderBottom: `1px solid ${gold}`,
+            borderBottom: `1px solid ${border}`,
           },
           '&#anrede': {
             maxWidth: '46rem',
@@ -78,7 +88,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           marginBottom: '0.75rem',
-          border: '1px solid #E1D7C8',
+          border: `1px solid ${border}`,
           boxShadow: 'none',
           overflow: 'hidden',
           '&:before': { display: 'none' },
@@ -91,47 +101,47 @@ const theme = createTheme({
         root: {
           minHeight: '4.25rem',
           padding: '0 1.25rem',
-          backgroundColor: '#FFFDF8',
-          '&.Mui-expanded': { minHeight: '4.25rem', backgroundColor: '#F5EFE4' },
+          backgroundColor: paper,
+          '&.Mui-expanded': { minHeight: '4.25rem', backgroundColor: paleOlive },
         },
         content: {
           margin: '0.75rem 0',
           '&.Mui-expanded': { margin: '0.75rem 0' },
         },
-        expandIconWrapper: { color: rose },
+        expandIconWrapper: { color: olive },
       },
     },
     MuiAccordionDetails: {
       styleOverrides: {
-        root: { padding: '1.5rem 1.25rem 1.75rem', borderTop: '1px solid #EAE1D5' },
+        root: { padding: '1.5rem 1.25rem 1.75rem', borderTop: `1px solid ${softBorder}` },
       },
     },
     MuiCard: {
       styleOverrides: {
-        root: { border: '1px solid #E1D7C8', boxShadow: 'none', backgroundColor: '#FFFDF8' },
+        root: { border: `1px solid ${border}`, boxShadow: 'none', backgroundColor: paper },
       },
     },
     MuiCardMedia: {
-      styleOverrides: { root: { borderBottom: `3px solid ${gold}` } },
+      styleOverrides: { root: { borderBottom: `3px solid ${olive}` } },
     },
     MuiTableCell: {
       styleOverrides: {
-        root: { borderColor: '#EAE1D5', padding: '0.8rem' },
+        root: { borderColor: softBorder, padding: '0.8rem' },
       },
     },
     MuiIconButton: {
       styleOverrides: {
         root: {
-          color: pine,
-          '&:hover': { backgroundColor: '#F4E7E2', color: rose },
+          color: ink,
+          '&:hover': { backgroundColor: paleOlive, color: ink },
         },
       },
     },
     MuiFormLabel: {
-      styleOverrides: { root: { color: pine, fontWeight: 700 } },
+      styleOverrides: { root: { color: ink, fontWeight: 600 } },
     },
     MuiRadio: {
-      styleOverrides: { root: { color: gold, '&.Mui-checked': { color: rose } } },
+      styleOverrides: { root: { color: olive, '&.Mui-checked': { color: ink } } },
     },
   },
 });

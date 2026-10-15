@@ -98,8 +98,8 @@ export default class App extends React.Component {
         >
           <Grid container spacing={2} maxWidth={"lg"} sx={{ mt: 2 }}>
             <Grid item xs={12} component="header" id="header">
-              <Typography variant="h1">Pamina & Fabian</Typography>
-              <Typography variant="h2">21.08.2027</Typography>
+              <Typography variant="h1">21. | August | 2027</Typography>
+              <Typography variant="h2" style={{textTransform: "uppercase", fontSize: "1.5rem", marginTop: "1rem" }}>Wir freuen uns, mit euch gemeinsam zu feiern.</Typography>
             </Grid>
             <Grid item xs={12} component="section" id="anrede" aria-labelledby="welcome-heading">
               <Typography id="welcome-heading" variant="h3">
@@ -108,7 +108,7 @@ export default class App extends React.Component {
               <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
                 {this.state.guests[0].einleitung}
               </Typography>
-              <Typography variant="body2">Auf dieser Seite haben wir ein paar wichtige Informationen für euch zusammengestellt, die wir auch im Laufe der nächsten Monate immer wieder aktualisieren werden.</Typography>
+              <Typography variant="body2" style={{marginTop: "1rem"}}>Auf dieser Seite haben wir ein paar wichtige Informationen für euch zusammengestellt, die wir auch im Laufe der nächsten Monate immer wieder aktualisieren werden.</Typography>
             </Grid>
             <Grid item xs={12} component="section" id="infos" aria-label="Hochzeitsinformationen">
               <PageItem

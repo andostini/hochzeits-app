@@ -1,5 +1,6 @@
 from collections import defaultdict
 from io import BytesIO
+import zipfile
 
 from flask import Blueprint, abort, request, send_file
 from PIL import Image, ImageDraw, ImageFont
@@ -121,46 +122,107 @@ def get_hotels():
     return {'hotels': [dict(hotel) for hotel in hotels]}
 
 
+def create_qr_png(url, names):
+    """Transparentes PNG: kleiner QR-Code, darunter URL und Gästenamen."""
+    text_color = (41, 71, 58, 255)
+    qr_size = 300
+    margin = 20
+    qr_image = qrcode.make(url, border=0).convert('RGBA').resize((qr_size, qr_size), Image.NEAREST)
+    # Weiße Pixel des QR-Codes transparent machen
+    qr_image.putdata([
+        (0, 0, 0, 0) if r > 128 else (r, g, b, 255)
+        for r, g, b, _ in qr_image.getdata()
+    ])
+
+    url_font = get_font(18, bold=True)
+    name_font = get_font(20)
+    measure = ImageDraw.Draw(Image.new('RGBA', (1, 1)))
+    lines = [(url, url_font), (', '.join(names), name_font)]
+    text_widths = [measure.textbbox((0, 0), text, font=font)[2] for text, font in lines]
+    width = max(qr_size, max(text_widths)) + 2 * margin
+    line_height = 30
+    height = margin + qr_size + 15 + len(lines) * line_height + margin
+
+    image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+    image.paste(qr_image, ((width - qr_size) // 2, margin), qr_image)
+    draw = ImageDraw.Draw(image)
+    y = margin + qr_size + 15
+    for text, font in lines:
+        draw_centered_text(draw, text, y, font, text_color, width / 2)
+        y += line_height
+    return image
+
+
 @bp.route('/invitations', methods=['GET'])
 def get_invitations():
     db = get_db()
     guests = db.execute(
-        'SELECT anrede, url_shortcode FROM guests ORDER BY url_shortcode, id'
+        'SELECT name, url_shortcode FROM guests ORDER BY url_shortcode, id'
     ).fetchall()
     invitations = defaultdict(list)
     for guest in guests:
-        invitations[guest['url_shortcode']].append(guest['anrede'])
+        invitations[guest['url_shortcode']].append(guest['name'])
 
     if not invitations:
         abort(404)
 
-    page_size = (2480, 3508)
-    pages = []
-    invitation_items = list(invitations.items())
-    for page_start in range(0, len(invitation_items), 4):
-        page = Image.new('RGB', page_size, '#ffffff')
-        for index, (shortcode, greetings) in enumerate(invitation_items[page_start:page_start + 4]):
-            column = index % 2
-            row = index // 2
-            left = column * 1240 + 35
-            top = row * 1754 + 35
-            right = (column + 1) * 1240 - 35
-            bottom = (row + 1) * 1754 - 35
+    archive = BytesIO()
+    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for shortcode, names in invitations.items():
             invitation_url = f'{request.url_root.rstrip("/")}/{shortcode}/'
-            greeting = ', '.join(greetings)
-            greeting = greeting[:1].upper() + greeting[1:]
-            draw_invitation_flyer(page, (left, top, right, bottom), greeting, invitation_url)
-        pages.append(page)
-
-    pdf = BytesIO()
-    pages[0].save(pdf, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
-    pdf.seek(0)
+            png = BytesIO()
+            create_qr_png(invitation_url, names).save(png, format='PNG')
+            zip_file.writestr(f'{shortcode}.png', png.getvalue())
+    archive.seek(0)
     return send_file(
-        pdf,
-        mimetype='application/pdf',
+        archive,
+        mimetype='application/zip',
         as_attachment=True,
-        download_name='hochzeitseinladungen.pdf',
+        download_name='hochzeitseinladungen.zip',
     )
+
+
+# Bisherige PDF-Variante (deaktiviert)
+# @bp.route('/invitations', methods=['GET'])
+# def get_invitations():
+#     db = get_db()
+#     guests = db.execute(
+#         'SELECT anrede, url_shortcode FROM guests ORDER BY url_shortcode, id'
+#     ).fetchall()
+#     invitations = defaultdict(list)
+#     for guest in guests:
+#         invitations[guest['url_shortcode']].append(guest['anrede'])
+#
+#     if not invitations:
+#         abort(404)
+#
+#     page_size = (2480, 3508)
+#     pages = []
+#     invitation_items = list(invitations.items())
+#     for page_start in range(0, len(invitation_items), 4):
+#         page = Image.new('RGB', page_size, '#ffffff')
+#         for index, (shortcode, greetings) in enumerate(invitation_items[page_start:page_start + 4]):
+#             column = index % 2
+#             row = index // 2
+#             left = column * 1240 + 35
+#             top = row * 1754 + 35
+#             right = (column + 1) * 1240 - 35
+#             bottom = (row + 1) * 1754 - 35
+#             invitation_url = f'{request.url_root.rstrip("/")}/{shortcode}/'
+#             greeting = ', '.join(greetings)
+#             greeting = greeting[:1].upper() + greeting[1:]
+#             draw_invitation_flyer(page, (left, top, right, bottom), greeting, invitation_url)
+#         pages.append(page)
+#
+#     pdf = BytesIO()
+#     pages[0].save(pdf, format='PDF', save_all=True, append_images=pages[1:], resolution=300)
+#     pdf.seek(0)
+#     return send_file(
+#         pdf,
+#         mimetype='application/pdf',
+#         as_attachment=True,
+#         download_name='hochzeitseinladungen.pdf',
+#     )
 
 
 @bp.route('/addGuest', methods=['POST'])
